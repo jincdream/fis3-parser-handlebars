@@ -1,0 +1,28 @@
+{
+  "name": "fis3-parser-handlebars",
+  "version": "0.0.1",
+  "description": "a plugin for fis3 to precompile handlebars v3.x template",
+  "main": "index.js",
+  "dependencies": {
+    "handlebars": "3.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jincdream/fis3-parser-handlebars.git"
+  },
+  "keywords": [
+    "fis",
+    "fis3",
+    "parser",
+    "handlebars"
+  ],
+  "author": "JinC a275727449@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jincdream/fis3-parser-handlebars/issues"
+  },
+  "homepage": "https://github.com/jincdream/fis3-parser-handlebars"
+}
