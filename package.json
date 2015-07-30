@@ -1,6 +1,6 @@
 {
   "name": "fis3-parser-handlebars",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a plugin for fis3 to precompile handlebars v3.x template",
   "main": "index.js",
   "dependencies": {
