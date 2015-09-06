@@ -7,9 +7,7 @@ var util = require('util')
 module.exports = function(content, file, opt){
 	var _dataPath = opt.dataFile
 	var dataPath = path.join(file.dirname,_dataPath)
-
 	var _data = util._extend({charset:file.charset.replace('utf','utf-')},opt._data || {})
-
 	var template = handlebars.compile(content)
 	var data
 	try{
