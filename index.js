@@ -127,9 +127,9 @@ module.exports = function(content, file, opt){
 
   var editeHtml = content
   // if(opt._edite){
-    fs.createWriteStream(path.resolve(file.origin,'../','../source/edite/',file.basename)).write(content)
+    fs.createWriteStream(path.resolve(file.origin,'../','../source/edit/',file.basename)).write(content)
     var _strData = JSON.stringify(data, null, "\t");
-    fs.createWriteStream(path.resolve(dataPath,'../','../source/edite/','./_data.js')).write(_strData)
+    fs.createWriteStream(path.resolve(dataPath,'../','../source/edit/','./_data.js')).write(_strData)
   // }
   
   console.log(data)
