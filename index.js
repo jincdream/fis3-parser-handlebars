@@ -6,55 +6,18 @@ Handlebars.registerHelper(layouts(Handlebars));
 var fs          = require('fs')
 var path        = require('path')
 var util        = fis.util
-
+var pre         = require('./pre/index.js')
 var cache       = require.cache
 var layoutCache = {}
 var _layoutPath = './layout/'
-var mockData = {
-    url: function(n){
-      n === void 0 && (n = '')
-      return 'http://www.pconline.com.cn?mock=' + (n)
-    },
-    title: function _text(n){
-      n === void 0 && (n = 6)
-      var i = 0
-      var text = ["\u592A","\u5E73","\u6D0B","\u7535","\u8111","\u7F51"]
-      var rz = []
-      while(i < n){
-        rz.push(text[i++%6])
-      }
-      return rz.join('')
-    },
-    text: function __text(n){
-      n === void 0 && (n = 6)
-      var k = n/10 * 6
-      var i = 0
-      var text = ["\u592A","\u5E73","\u6D0B","\u7535","\u8111","\u7F51"]
-      var dot = '\u3002'
-      var rz = []
-      while(i < n){
-        var m = Math.random() * k | 0
-        if(rz[i-1]!== dot && m === i%k){
-          rz.push(dot)
-          i++
-          continue
-        }
-        rz.push(text[i++%6])
-      }
-      return rz.join('')
-    },
-    img:function _img(wx,text){
-      var randomColor = ('00000'+(Math.random()*0x1000000<<0).toString(16)).slice(-6);
-      return 'http://dummyimage.com/'+wx+'/'+randomColor+'/FFF'+ (text ? '&text='+text : '')
-    }
-  }
+
 module.exports = function(content, file, opt){
   var _dataPath = opt.dataFile
   var dataPath  = path.join(file.dirname,_dataPath)
   var fileName  = file.filename
   // !file._orgData && (file._orgData = content);
   var _data = util.assign({charset:file.charset.replace('utf','utf-')},opt._data || {})
-  var data,_dataFile,template,_k = 0
+  var data,_dataFile,template
 
     
   // if(opt._edite){
@@ -75,62 +38,15 @@ module.exports = function(content, file, opt){
     data = {}
   }
   util.assign(data,_data)
-  var _preTime = data._editerSaveTime === void(0) ? '' : data._editerSaveTime
-  content = content.replace(/\{\{\#(.*?)\}\}([\s\S]*?)\{\{\/\1\}\}/gm,function(m,blockName,content){
-    var item = data[blockName]
-    var k = 0
-    var _mockData = {}
-    if(blockName === 'html'){
-      var mock = 'mock'+_preTime+'_' + blockName + '_' + (k++)
-      data[mock] = new Handlebars.SafeString(content)
-      return '{{'+mock+'}}'
-    }
-    if(item && Array.isArray(item)){
-      // item.push
-      var ln = item.length
-      var itIndex = 0
-      content = content
-      .replace(/\{\{\.\}\}/g,function(){
-        return '{{_org_'+blockName+'}}'
-      })
-      .replace(/\{\{\@(.*?)\}\}/g,function(_m,_a){
-        var _mock = _a.split(':')
-        var name = _mock[0]
-        var arg = _mock[1]
-        var mock = 'mock'+_preTime+'_' + name + '_' + (k++) + '_' + blockName
-        console.log(name, '  name')
-        _mockData[mock] = mockData[name](arg)
-        return '{{' + mock + '}}'
-      })
-      item.forEach(function(obj, index){
-        var _org = obj
-        if(('' + _org).toLowerCase() !== '[object object]'){
-          obj = {}
-          obj['_org_'+blockName] = _org
-        }
-        data[blockName][index] = util.assign(obj,_mockData)
-      })
-    }
-    return '{{#' + blockName + '}}' + content + '{{/'+ blockName +'}}'
-  })
-  .replace(/\{\{\@(.*?)\}\}/g,function(m,a){
-    var _mock = a.split(':')
-    var name = _mock[0]
-    var arg = _mock[1]
-    var mock = 'mock'+_preTime+'_' +name+'_'+ (_k++)
-    if(mockData[name]){
-      data[mock] = mockData[name](arg)
-      return '{{' + mock + '}}'
-    }
-    return m
-  })
 
   var editeHtml = content
   // if(opt._edite){
-    fs.createWriteStream(path.resolve(file.origin,'../','../source/edit/',file.basename)).write(content)
-    var _strData = JSON.stringify(data, null, "\t");
-    fs.createWriteStream(path.resolve(dataPath,'../','../source/edit/','./_data.js')).write(_strData)
+  var editHtmlFile = path.resolve(file.origin,'../','../source/edit/',file.basename)
+  var editDataFile = path.resolve(dataPath,'../','../source/edit/','./'+file.basename.replace('.html','')+'_data.js')
   // }
+  var preObj = pre(content,data,editDataFile,editHtmlFile)
+  content = preObj.content
+  util.assign(data,preObj.data)
   
   console.log(data)
   var _reg = /Error\:\sMissing\spartial\:\s\'(.*?)\'/
