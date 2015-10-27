@@ -44,7 +44,7 @@ module.exports = function(content, file, opt){
   var editHtmlFile = path.resolve(file.origin,'../','../source/edit/',file.basename)
   var editDataFile = path.resolve(dataPath,'../','../source/edit/','./'+file.basename.replace('.html','')+'_data.js')
   // }
-  var preObj = pre(content,data,editDataFile,editHtmlFile)
+  var preObj = pre(content,data,editDataFile,editHtmlFile,file)
   content = preObj.content
   util.assign(data,preObj.data)
   
